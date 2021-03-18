@@ -1,0 +1,168 @@
+﻿@inject UserWrapper UserWrapper
+@using RegistrosSanitarios.Servicios;
+@inject ServicioUsuarios ServicioUsuarios;
+@using System.Globalization
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - Registros sanitarios</title>
+        <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap-multiselect/css/bootstrap-multiselect.css" rel="stylesheet" />
+
+        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <link rel="icon" type="image/x-icon" href="~/images/favicon.ico">
+        <link href="~/lib/bootstrap-toggle-master/css/bootstrap-toggle.css" rel="stylesheet" />
+
+        <environment include="Development,Staging,Test,LenovoMMD,Desa">
+            <link rel="stylesheet" href="~/common/css/site.css" />
+            <link rel="stylesheet" href="~/common/css/siteHorizontal.css" />
+        </environment>
+        <environment exclude="Development,Staging,Test,LenovoMMD,Desa">
+            <link rel="stylesheet" href="~/common/css/site.min.css" />
+            <link rel="stylesheet" href="~/common/css/siteHorizontal.min.css" asp-append-version="true" />
+        </environment>
+
+
+    <style>
+    </style>
+</head>
+<body class="" id="page-top">
+    <div class="row w-100">
+
+        <div class="col-3 col-md-1 pb-md-1">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index"><img src="~/common/images/Isologo-Baliarda_30x65.png" class="img-responsive imgLogoPc pl-4 pr-2 pt-2" style="z-index: 1000;"></a>
+        </div>
+        <div class="col-3 align-content-center my-auto ">
+            <ul class="tituloWKF navbar-nav d-none d-sm-none d-md-none d-lg-block"><li class="nav-item"><span class="navbar-text p-0 font-weight-bold">Administración - Registros sanitarios</span></li></ul>
+        </div>
+
+        <div class="navbar-nav ml-auto mr-2  d-flex flex-row">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="nav-item mb-2 mb-md-0 my-md-3 my-0">
+
+                    <span class="text-dark mr-1 mr-md-0" id="usuario">&nbsp;@UserWrapper.GetUser()</span>
+                    <span class="text-dark mr-5 d-none d-lg-inline-flex ml-0" id="usuario">,&nbsp;@DateTime.Now.ToString("dd 'de' MMMM yyyy", CultureInfo.CreateSpecificCulture("es-AR"))</span>
+
+                </div>
+                <div class="nav-item dropdown no-arrow my-md-2 my-0 p-0 p-md-2" id="SeccionAlertas">
+
+
+                    <a class="nav-link p-0 " href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bell fa-fw texto-dark"></i><span class="badge badge-danger" id="TotalAlertas">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right texto-dark" aria-labelledby="alertsDropdown" id="TotalesNovedad">
+                        <a class="dropdown-item" href="#"> Evento novedad <span class="badge badge-light">2</span></a>
+
+                        <a class="dropdown-item" href="#"> Otra novedad <span class="badge badge-light">1</span></a>
+                        <div class="dropdown-divider"></div><a class="dropdown-item" href="/"><strong>Ir a novedades </strong><i class="fa fa-angle-right"></i></a>
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <li class="nav-item">
+                    <span class="navbar-text mr-4"><a>(Sin autenticar)</a></span>
+                </li>
+            }
+
+
+        </div>
+
+    </div>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark navbar-static-top navbar-hover" id="mainNav" style="z-index:9990">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topHeader" aria-controls="topHeader" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="topHeader">
+            <ul class="navbar-nav mr-auto">
+
+                @if (ServicioUsuarios.EsSuperAdmin(UserWrapper.GetUser()) || ServicioUsuarios.EsAdmin(UserWrapper.GetUser()))
+                {
+                    <li id="navConfig" class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Configuración</a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdown02">
+                            <li id="navRegistrosSanitariosActivos"><a class="dropdown-item" href="@Url.Action("Index", "RegistrosSanitariosBaliarda")">RegistrosSanitarios</a></li>
+                            <li id="navEstTipoDispActivos"><a class="dropdown-item" href="@Url.Action("Index", "EstructuraTipoRegistrosSanitarios")">Estructura Tipo RegistrosSanitarios</a></li>
+                            @*<li id="navPruebaApiActivos"><a class="dropdown-item" href="@Url.Action("EnviarValores", "PruebaApi")">Prueba metodo Api</a></li>*@
+                        </ul>
+                    </li>
+                }
+                @if (ServicioUsuarios.EsSuperAdmin(UserWrapper.GetUser()) || ServicioUsuarios.EsAdmin(UserWrapper.GetUser()) || ServicioUsuarios.EsReportes(UserWrapper.GetUser()))
+                {
+                    <li id="navReportes" class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reportes</a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdown02">
+                            <li id="navMoniDispActivos"><a class="dropdown-item" href="@Url.Action("RegistrosSanitariosDetalles", "Report")">Monitoreo RegistrosSanitarios</a></li>
+                            <li id="navMoniErrorActivos"><a class="dropdown-item" href="@Url.Action("ErroresValores", "Report")">Monitoreo Errores</a></li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+
+
+        </div>
+
+        <!--
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        -->
+
+    </nav>
+
+    <main role="main" class="container-fluid">
+
+        <div class="starter-template">
+
+            @RenderBody()
+            <hr />
+            <footer>
+                <p class="small">&copy; 2020 - Baliarda.Registros</p>
+            </footer>
+        </div>
+
+    </main>
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/popper.js/popper.min.js"></script>
+        <script src="~/lib/bootstrap-confirmation2/bootstrap-confirmation.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.1/js/responsive.bootstrap4.min.js"></script>
+        <script src="~/js/app/datatables.config.js"></script>
+        <script src="~/lib/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+        <script src="~/lib/bootstrap-multiselect/js/bootstrap-multiselect-collapsible-groups.js"></script>
+        <script src="~/lib/jquery.easing/jquery.easing.1.3.min.js"></script>
+        <script src="~/lib/bootstrap-toggle-master/js/bootstrap-toggle.js"></script>
+
+
+    <environment include="Development,Staging,Test,LenovoMMD,Desa">
+        <script src="~/common/js/siteHorizontal.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development,Staging,Test,LenovoMMD,Desa">
+        <script src="~/common/js/siteHorizontal.min.js" asp-append-version="true"></script>
+    </environment>
+
+
+    @RenderSection("Scripts", required: false)
+    <script language="javascript" type="text/javascript">
+        $('#topHeader .navbar-nav a').on('click', function () {
+
+            $('#topHeader .navbar-nav').find('li.active').removeClass('active');
+            $(this).parent('li').addClass('active');
+            //alert($(this).parent('li').attr("class"));
+        });
+    </script>
+</body>
+</html>

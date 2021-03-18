@@ -1,0 +1,67 @@
+﻿@inject UserWrapper UserWrapper
+@{
+    ViewBag.Title = "Configuracion Manual de Usuario";
+}
+
+<h2>Funcionaldad solo para pruebas</h2>
+
+<form  asp-action="UserInfo" >
+    <div class="form-horizontal" id="body-content">
+   
+        @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+        {
+            <div class="alert alert-danger">
+                <a href="#" class="close" data-dismiss="alert">×</a>
+                @Html.ValidationSummary()
+            </div>
+        }
+
+
+        <div class="form-group">
+            <label class="col-md-6">Usuario Actual</label>
+            <div class="col-md-4">
+                <input name="userName" class="form-control form-control-sm" 
+                       value="@UserWrapper.GetUser()"/> 
+                  
+            </div>
+
+        </div>
+        <div class="form-check">
+            <div class="col-md-4">
+                @Html.CheckBox("isAdmin",UserWrapper.IsAdmin(),new {@class="form-check-input"}) 
+            </div>
+            <label class="col-md-6 form-check-label">Administrador</label>
+
+        </div>
+
+        <div class="form-check">
+            <div class="col-md-4">
+                @Html.CheckBox("reset",UserWrapper.IsAdmin(),new {@class="form-check-input", @readonly=true}) 
+            </div>
+            <label class="col-md-6 form-check-label">Restablecer valores</label>
+
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="submit" value="Guardar" class="btn btn-primary"/>
+                <input id="btnReset" type="button" value="Resetear" class="btn btn-success"/>
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    <script type="text/javascript">
+
+
+        $(document).ready(function() {
+
+            $('#btnReset').on('click',
+                function(e) {
+
+                    $('#reset')[0].checked = true;
+                });
+        });
+
+    </script>
+}
